@@ -36,9 +36,9 @@
 </head>
 <body>
   <h1>
-    Nguyen Dinh Huy 22A1201D0121<br>
-    Tran Huy Anh 22A1201D0027<br>
-    Nguyen Thuy Duong 22A1201D0071
+    Nguyễn Đình Huy 22A1201D0121<br>
+    Trần Huy Anh 22A1201D0027<br>
+    Nguyễn Thị Thùy Dương 22A1201D0071
   </h1>
   <div id="score">Score: 0</div>
   <canvas width="400" height="400" id="game"></canvas>
