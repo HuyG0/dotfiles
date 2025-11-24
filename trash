@@ -1,159 +1,240 @@
-<!DOCTYPE html>
-<html>
-<head>
-  <meta charset="UTF-8">
-  <title>Basic Snake HTML Game</title>
-  <style>
-    html, body {
-      height: 100%;
-      margin: 0;
-      background: #fffc1f;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      color: white;
-      font-family: Arial, sans-serif;
-    }
+// -*- mode: jsonc -*-
+{
+    // "layer": "top", // Waybar at top layer
+    // "position": "bottom", // Waybar position (top|bottom|left|right)
+    "height": 30, // Waybar height (to be removed for auto height)
+    // "width": 1280, // Waybar width
+    "spacing": 4, // Gaps between modules (4px)
+    // Choose the order of the modules
+    "modules-left": [
+        "hyprland/workspaces",
+        "hyprland/mode",
+        "hyprland/scratchpad",
+        "custom/media"
+    ],
+    "modules-center": [
+        "hyprland/window"
+    ],
+    "modules-right": [
+        "mpd",
+        "idle_inhibitor",
+        "pulseaudio",
+        "network",
+        "power-profiles-daemon", 
+        "cpu",
+        "memory",
+        "temperature",
+        "backlight",
+        "keyboard-state",
+        "sway/language",
+        "battery",
+        "battery#bat2",
+        "clock",
+        "tray",
+        "custom/power"
+    ],
+    // Modules configuration
+    "hyprland/workspaces": {
+        "workspace-taskbar": {
+            // Enable the workspace taskbar. Default: false
+            "enable": true,
 
-    h1 {
-      color: #961fff;
-      text-align: center;
-      margin-bottom: 10px;
-    }
+            // If true, the active/focused window will have an 'active' class. Could cause higher CPU usage due to more frequent redraws. Default: false
+            "update-active-window": true,
 
-    #score {
-      font-size: 18px;
-      margin-bottom: 10px;
-      color: #961fff;
-    }
+            // Format of the windows in the taskbar. Default: "{icon}". Allowed variables: {icon}, {title}
+            "format": "{icon} {title:.20}",
 
-    canvas {
-      border: 1px solid white;
-      background: #111;
-    }
-  </style>
-</head>
-<body>
-  <h1>
-    Nguyễn Đình Huy 22A1201D0121<br>
-    Trần Huy Anh 22A1201D0026<br>
-    Nguyễn Thị Thùy Dương 22A1201D0071
-  </h1>
-  <div id="score">Score: 0</div>
-  <canvas width="400" height="400" id="game"></canvas>
+            // Icon size in pixels. Default: 16
+            "icon-size": 16,
 
-  <script>
-    const canvas = document.getElementById('game');
-    const context = canvas.getContext('2d');
-    const scoreDisplay = document.getElementById('score');
+            // Either the name of an installed icon theme or an array of themes (ordered by priority). If not set, the default icon theme is used.
+            "icon-theme": "some_icon_theme",
 
-    const grid = 16;
-    let count = 0;
-    let score = 0;
+            // Orientation of the taskbar ("horizontal" or "vertical"). Default: "horizontal".
+            "orientation": "horizontal",
 
-    const snake = {
-      x: 160,
-      y: 160,
-      dx: grid,
-      dy: 0,
-      cells: [],
-      maxCells: 4
-    };
+           // List of regexes. A window will NOT be shown if its window class or title match one or more items. Default: []
+           "ignore-list": [ "code", "Firefox - .*" ],
 
-    const apple = {
-      x: 320,
-      y: 320
-    };
-
-    function getRandomInt(min, max) {
-      return Math.floor(Math.random() * (max - min)) + min;
-    }
-
-    function resetGame() {
-      snake.x = 160;
-      snake.y = 160;
-      snake.cells = [];
-      snake.maxCells = 4;
-      snake.dx = grid;
-      snake.dy = 0;
-      score = 0;
-      scoreDisplay.textContent = "Score: " + score;
-      apple.x = getRandomInt(0, 25) * grid;
-      apple.y = getRandomInt(0, 25) * grid;
-    }
-
-    function loop() {
-      requestAnimationFrame(loop);
-
-      // slow game loop to 15 fps
-      if (++count < 4) return;
-      count = 0;
-
-      context.clearRect(0, 0, canvas.width, canvas.height);
-
-      // move snake
-      snake.x += snake.dx;
-      snake.y += snake.dy;
-
-      // wrap around edges
-      if (snake.x < 0) snake.x = canvas.width - grid;
-      else if (snake.x >= canvas.width) snake.x = 0;
-      if (snake.y < 0) snake.y = canvas.height - grid;
-      else if (snake.y >= canvas.height) snake.y = 0;
-
-      // add new head
-      snake.cells.unshift({ x: snake.x, y: snake.y });
-
-      // remove extra cells
-      if (snake.cells.length > snake.maxCells) snake.cells.pop();
-
-      // draw apple
-      context.fillStyle = 'red';
-      context.fillRect(apple.x, apple.y, grid - 1, grid - 1);
-
-      // draw snake
-      context.fillStyle = 'lime';
-      snake.cells.forEach(function (cell, index) {
-        context.fillRect(cell.x + 1, cell.y + 1, grid - 2, grid - 2);
-
-        // apple eaten
-        if (cell.x === apple.x && cell.y === apple.y) {
-          snake.maxCells++;
-          score++;
-          scoreDisplay.textContent = "Score: " + score;
-
-          // reposition apple, avoid spawning on snake
-          do {
-            apple.x = getRandomInt(0, 25) * grid;
-            apple.y = getRandomInt(0, 25) * grid;
-          } while (snake.cells.some(c => c.x === apple.x && c.y === apple.y));
+           // Command to run when a window is clicked. Default: "" (switch to the workspace as usual). Allowed variables: {address}, {button}
+            "on-click-window": "/some/arbitrary/script {address} {button}"
         }
-
-        // check collision with self
-        for (let i = index + 1; i < snake.cells.length; i++) {
-          if (cell.x === snake.cells[i].x && cell.y === snake.cells[i].y) {
-            resetGame();
-          }
+    },
+    "keyboard-state": {
+        "numlock": true,
+        "capslock": true,
+        "format": "{name} {icon}",
+        "format-icons": {
+            "locked": "",
+            "unlocked": ""
         }
-      });
-    }
-
-    // handle keyboard input
-    document.addEventListener('keydown', function (e) {
-      if (e.key === 'ArrowLeft' && snake.dx === 0) {
-        snake.dx = -grid; snake.dy = 0;
-      } else if (e.key === 'ArrowUp' && snake.dy === 0) {
-        snake.dy = -grid; snake.dx = 0;
-      } else if (e.key === 'ArrowRight' && snake.dx === 0) {
-        snake.dx = grid; snake.dy = 0;
-      } else if (e.key === 'ArrowDown' && snake.dy === 0) {
-        snake.dy = grid; snake.dx = 0;
+    },
+    "hyprland/mode": {
+        "format": "<span style=\"italic\">{}</span>"
+    },
+    "hyprland/scratchpad": {
+        "format": "{icon} {count}",
+        "show-empty": false,
+        "format-icons": ["", ""],
+        "tooltip": true,
+        "tooltip-format": "{app}: {title}"
+    },
+    "hyprland/window": {
+       "format": "-> {}",
+       "rewrite": {
+           "(.*) — Mozilla Firefox": "🌎 $1",
+           "(.*) - fish": "> [$1]"
+       },
+       "separate-outputs": true
+    },
+    "mpd": {
+        "format": "{stateIcon} {consumeIcon}{randomIcon}{repeatIcon}{singleIcon}{artist} - {album} - {title} ({elapsedTime:%M:%S}/{totalTime:%M:%S}) ⸨{songPosition}|{queueLength}⸩ {volume}% ",
+        "format-disconnected": "Disconnected ",
+        "format-stopped": "{consumeIcon}{randomIcon}{repeatIcon}{singleIcon}Stopped ",
+        "unknown-tag": "N/A",
+        "interval": 5,
+        "consume-icons": {
+            "on": " "
+        },
+        "random-icons": {
+            "off": "<span color=\"#f53c3c\"></span> ",
+            "on": " "
+        },
+        "repeat-icons": {
+            "on": " "
+        },
+        "single-icons": {
+            "on": "1 "
+        },
+        "state-icons": {
+            "paused": "",
+            "playing": ""
+        },
+        "tooltip-format": "MPD (connected)",
+        "tooltip-format-disconnected": "MPD (disconnected)"
+    },
+    "idle_inhibitor": {
+        "format": "{icon}",
+        "format-icons": {
+            "activated": "",
+            "deactivated": ""
+        }
+    },
+    "tray": {
+        // "icon-size": 21,
+        "spacing": 10,
+        // "icons": {
+        //   "blueman": "bluetooth",
+        //   "TelegramDesktop": "$HOME/.local/share/icons/hicolor/16x16/apps/telegram.png"
+        // }
+    },
+    "clock": {
+        // "timezone": "America/New_York",
+        "tooltip-format": "<big>{:%Y %B}</big>\n<tt><small>{calendar}</small></tt>",
+        "format-alt": "{:%Y-%m-%d}"
+    },
+    "cpu": {
+        "format": "{usage}% ",
+        "tooltip": false
+    },
+    "memory": {
+        "format": "{}% "
+    },
+    "temperature": {
+        // "thermal-zone": 2,
+        // "hwmon-path": "/sys/class/hwmon/hwmon2/temp1_input",
+        "critical-threshold": 80,
+        // "format-critical": "{temperatureC}°C {icon}",
+        "format": "{temperatureC}°C {icon}",
+        "format-icons": ["", "", ""]
+    },
+    "backlight": {
+        // "device": "acpi_video1",
+        "scroll-step": 5,
+        "format": "{percent}% {icon}",
+        "format-icons": ["", "", "", "", "", "", "", "", ""]
+    },
+    "battery": {
+        "states": {
+            // "good": 95,
+            "warning": 30,
+            "critical": 15
+        },
+        "format": "{capacity}% {icon}",
+        "format-full": "{capacity}% {icon}",
+        "format-charging": "{capacity}% ",
+        "format-plugged": "{capacity}% ",
+        "format-alt": "{time} {icon}",
+        // "format-good": "", // An empty format will hide the module
+        // "format-full": "",
+        "format-icons": ["", "", "", "", ""]
+    },
+    "battery#bat2": {
+        "bat": "BAT2"
+    },
+    "power-profiles-daemon": {
+      "format": "{icon}",
+      "tooltip-format": "Power profile: {profile}\nDriver: {driver}",
+      "tooltip": true,
+      "format-icons": {
+        "default": "",
+        "performance": "",
+        "balanced": "",
+        "power-saver": ""
       }
-    });
+    },
+    "network": {
+        // "interface": "wlp2*", // (Optional) To force the use of this interface
+        "format-wifi": "{essid} ({signalStrength}%) ",
+        "format-ethernet": "{ipaddr}/{cidr} ",
+        "tooltip-format": "{ifname} via {gwaddr} ",
+        "format-linked": "{ifname} (No IP) ",
+        "format-disconnected": "Disconnected ⚠",
+        "format-alt": "{ifname}: {ipaddr}/{cidr}"
+    },
+    "pulseaudio": {
+        "scroll-step": 5, // %, can be a float
+        "format": "{volume}% {icon}   {format_source}",
+        "format-bluetooth": "{volume}% {icon} {format_source}",
+        "format-bluetooth-muted": " {icon} {format_source}",
+        "format-muted": " {format_source}",
+        "format-source": "{volume}% ",
+        "format-source-muted": "",
+        "format-icons": {
+            "headphone": "",
+            "hands-free": "",
+            "headset": "",
+            "phone": "",
+            "portable": "",
+            "car": "",
+            "default": ["", "", ""]
+        },
+        "on-click": "pavucontrol"
+    },
+    "custom/media": {
+        "format": "{icon} {text}",
+        "return-type": "json",
+        "max-length": 40,
+        "format-icons": {
+            "spotify": "",
+            "default": "🎜"
+        },
+        "escape": true,
+        "exec": "$HOME/.config/waybar/mediaplayer.py 2> /dev/null" // Script in resources folder
+        // "exec": "$HOME/.config/waybar/mediaplayer.py --player spotify 2> /dev/null" // Filter player based on name
+    },
+    "custom/power": {
+        "format" : "⏻ ",
+		"tooltip": false,
+		"menu": "on-click",
+		"menu-file": "$HOME/.config/waybar/power_menu.xml", // Menu file in resources folder
+		"menu-actions": {
+			"shutdown": "shutdown",
+			"reboot": "reboot",
+			"suspend": "systemctl suspend",
+			"hibernate": "systemctl hibernate"
+		}
+    }
 
-    // start game
-    requestAnimationFrame(loop);
-  </script>
-</body>
-</html>
+}
